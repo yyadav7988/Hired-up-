@@ -1,0 +1,22 @@
+# Sensitive Files (Recursive)
+**/.env
+**/.env.*
+!.env.example
+**/node_modules/
+
+# Local/Temporary Files
+out.txt
+file_list.txt
+*.ps1_history
+.gemini/
+.cortex/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# OS files
+.DS_Store
+Thumbs.db
