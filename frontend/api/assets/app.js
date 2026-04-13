@@ -218,6 +218,7 @@ async function handleAuth(event) {
         const res = await fetch((window.API_BASE_URL || "") + `/api${endpoint}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            mode: "cors",
             body: JSON.stringify(body)
         });
 
@@ -239,6 +240,7 @@ async function handleAuth(event) {
         setTimeout(() => { window.location.href = redirectUrl; }, 1000);
 
     } catch (err) {
+        console.error("API Error:", err);
         showToast(err.message || "Server connection failed", "error");
     } finally {
         hideLoader();
@@ -292,12 +294,11 @@ async function fetchRecentTalent() {
     if (!section || !ticker) return;
 
     try {
-        let res;
-        try {
-            res = await fetch((window.API_BASE_URL || "") + '/api/auth/candidates');
-        } catch (e) {
-            res = await fetch((window.API_BASE_URL || "") + '/api/auth/candidates');
-        }
+        const res = await fetch((window.API_BASE_URL || "") + '/api/auth/candidates', {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            mode: "cors"
+        });
 
         if (!res.ok) throw new Error('Failed to fetch');
         const candidates = await res.json();

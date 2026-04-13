@@ -314,15 +314,21 @@
 
     document.addEventListener('DOMContentLoaded', loadAll);
 
-    async function safeFetch(url, opts = {}) {
+    async function safeFetch(path, opts = {}) {
       const token = localStorage.getItem('hiredUpToken') || '';
       const headers = { 
         'Content-Type': 'application/json', 
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...opts.headers 
       };
-      try { return await fetch(url, { ...opts, headers }); }
-      catch { return await fetch((window.API_BASE_URL || "") + url, { ...opts, headers }); }
+      
+      const url = path.startsWith('http') ? path : (window.API_BASE_URL || "") + path;
+      
+      try { return await fetch(url, { ...opts, headers, mode: "cors" }); }
+      catch (err) { 
+        console.error("API Error:", err);
+        throw err; 
+      }
     }
 
     /* ========================= LOAD ALL ========================= */

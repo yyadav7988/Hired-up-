@@ -325,13 +325,15 @@
         const res = await fetch(`${GEMINI_API}/api/interview/questions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          mode: 'cors',
           body: JSON.stringify({ role, type, level, count: totalQCount })
         });
         if (res.ok) {
           const data = await res.json();
           questions = data.questions;
         } else throw new Error();
-      } catch {
+      } catch (err) {
+        console.error("API Error:", err);
         // Fallback question bank
         questions = getFallbackQuestions(role, type, level, totalQCount);
       }
@@ -423,11 +425,13 @@
         const res = await fetch(`${GEMINI_API}/api/interview/evaluate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          mode: 'cors',
           body: JSON.stringify({ question: q.text, answer, role: document.getElementById('job-role').value || 'Software Engineer' })
         });
         if (res.ok) { evaluation = await res.json(); }
         else throw new Error();
-      } catch {
+      } catch (err) {
+        console.error("API Error:", err);
         evaluation = localEvaluate(answer);
       }
 

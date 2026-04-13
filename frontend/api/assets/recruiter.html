@@ -372,9 +372,10 @@
       const token = localStorage.getItem('hiredUpToken') || (_u && _u.accessToken) || '';
       const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...opts.headers };
       try {
-        return await fetch((window.API_BASE_URL || "") + path, { ...opts, headers });
-      } catch {
-        return await fetch((window.API_BASE_URL || "") + path, { ...opts, headers });
+        return await fetch((window.API_BASE_URL || "") + path, { ...opts, headers, mode: "cors" });
+      } catch (err) {
+        console.error("API Error:", err);
+        throw err;
       }
     }
 

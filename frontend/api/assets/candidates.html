@@ -385,8 +385,11 @@
 
         async function fetchCandidates() {
             try {
-                let res;
-                res = await fetch((window.API_BASE_URL || "") + '/api/auth/candidates');
+                const res = await fetch((window.API_BASE_URL || "") + '/api/auth/candidates', {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    mode: "cors"
+                });
 
                 if (!res.ok) throw new Error('Failed to fetch');
                 candidates = await res.json();

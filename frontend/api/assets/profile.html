@@ -482,8 +482,14 @@
     async function apiFetch(baseUrl, path, opts = {}) {
       const token = localStorage.getItem('hiredUpToken') || user?.accessToken || '';
       const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...opts.headers };
-      try { return await fetch(baseUrl + path, { ...opts, headers }); }
-      catch { return await fetch((window.API_BASE_URL || "") + path, { ...opts, headers }); }
+      const url = baseUrl === window.API_BASE_URL ? (window.API_BASE_URL || "") + path : baseUrl + path;
+
+      try { 
+        return await fetch(url, { ...opts, headers, mode: "cors" }); 
+      } catch (err) { 
+        console.error("API Error:", err);
+        throw err; 
+      }
     }
 
     async function loadAll() {
@@ -750,7 +756,7 @@
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const res = await fetch((window.API_BASE_URL || "") + '/parse/resume', { method:'POST', body:formData });
+        const res = await fetch((window.API_BASE_URL || "") + '/parse/resume', { method:'POST', mode:'cors', body:formData });
         if (res.ok) {
           const parsed = await res.json();
           aiExtractedSkills = parsed.skills || [];
@@ -760,7 +766,7 @@
             return;
           }
         }
-      } catch { /* ML service not running, fallback */ }
+      } catch (err) { console.error("API Error:", err); /* ML service not running, fallback */ }
       showToast('Resume saved. AI parsing unavailable — add skills manually.', 'info');
     }
 
@@ -864,6 +870,7 @@
         const mlRes = await fetch((window.API_BASE_URL || "") + '/score/credibility', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          mode: 'cors',
           body: JSON.stringify({
             assessment_score: realStats.avgAccuracy || 0, 
             coding_score: accuracy,
@@ -909,7 +916,7 @@
         showToast(`✨ AI Analysis Complete! Your credibility score is now ${analysis.total_score}%.`, 'success');
 
       } catch (err) {
-        console.error(err);
+        console.error("API Error:", err);
         showToast('AI Engine Offline. Ensure all 5 services are running.', 'error');
       } finally { 
         btn.innerHTML = originalHtml; 

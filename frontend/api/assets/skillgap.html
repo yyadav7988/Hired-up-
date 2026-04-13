@@ -320,7 +320,11 @@
 
       // Load jobs
       try {
-        const res = await fetch((window.API_BASE_URL || "") + '/api/jobs').catch(() => fetch((window.API_BASE_URL || "") + '/api/jobs'));
+        const res = await fetch((window.API_BASE_URL || "") + '/api/jobs', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors'
+        });
         const jobs = await res.json();
         const sel = document.getElementById('job-selector');
         jobs.forEach(j => {
@@ -333,7 +337,10 @@
         const params = new URLSearchParams(window.location.search);
         if (params.get('jobId')) { sel.value = params.get('jobId'); runAnalysis(); }
         else document.getElementById('empty-state').classList.remove('hidden');
-      } catch { document.getElementById('empty-state').classList.remove('hidden'); }
+      } catch (err) { 
+        console.error("API Error:", err);
+        document.getElementById('empty-state').classList.remove('hidden'); 
+      }
     });
 
     function renderUserSkillsPreview() {
@@ -360,9 +367,12 @@
       // Try backend skill gap API
       try {
         const res = await fetch(`${API}/api/jobs/skillgap/${jobId}?skills=${encodeURIComponent(userSkills.join(','))}`, {
+          method: 'GET',
           headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('hiredUpToken')}`
-          }
+          },
+          mode: 'cors'
         });
         if (res.ok) {
           const data = await res.json();

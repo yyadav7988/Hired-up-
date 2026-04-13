@@ -460,7 +460,11 @@
         async function fetchChallenges() {
             const listEl = document.getElementById('challenges-list');
             try {
-                const res = await fetch((window.API_BASE_URL || "") + '/api/problems');
+                const res = await fetch((window.API_BASE_URL || "") + '/api/problems', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    mode: 'cors'
+                });
                 const problems = await res.json();
 
                 listEl.innerHTML = '';
@@ -548,6 +552,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
+                    mode: 'cors',
                     body: JSON.stringify(jobData)
                 });
 
