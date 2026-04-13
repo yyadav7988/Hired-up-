@@ -1,3 +1,5 @@
+console.log("App JS Loaded");
+
 /* 
  * HiredUp - Main Application Logic 
  * Handles Navigation, Auth State Simulation, and Global Interactions
