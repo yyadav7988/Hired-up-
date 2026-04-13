@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./style.css">
     <style>
         body {
             color: var(--text-main);
@@ -397,8 +397,8 @@
         </div>
     </div>
 
-    <script src="api_utils.js"></script>
-    <script src="app.js"></script>
+    <script src="./api_utils.js"></script>
+    <script src="./app.js"></script>
 
     <script>
         let currentMode = "login";
@@ -459,6 +459,7 @@
                 }
             }
 
+            console.log("Calling API:", url);
             try {
                 const res = await fetch(url, {
                     method: "POST",

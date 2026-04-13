@@ -7,7 +7,7 @@
   <meta name="description" content="Visualize exactly which skills you have, which you're missing, and where to focus to land your target role.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="./index.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     .page { max-width: 1100px; margin: 0 auto; padding: 100px 2rem 5rem; }
@@ -277,8 +277,8 @@
     </div>
   </div>
 
-  <script src="api_utils.js"></script>
-  <script src="app.js"></script>
+  <script src="./api_utils.js"></script>
+  <script src="./app.js"></script>
   <script>
     const API = (window.API_BASE_URL || "");
     let userSkills = JSON.parse(localStorage.getItem('userSkills') || '[]');

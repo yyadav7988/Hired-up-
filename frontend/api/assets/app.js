@@ -215,7 +215,9 @@ async function handleAuth(event) {
             : { email, password };
 
         const endpoint = isSignup ? "/auth/register" : "/auth/login";
-        const res = await fetch((window.API_BASE_URL || "") + `/api${endpoint}`, {
+        const url = (window.API_BASE_URL || "") + `/api${endpoint}`;
+        console.log("Calling API:", url);
+        const res = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             mode: "cors",
