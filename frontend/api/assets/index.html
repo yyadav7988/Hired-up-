@@ -321,8 +321,21 @@
                     <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">Candidates solve actual problems in a
                         browser-based IDE. No more
                         whiteboard inversions of binary trees.</p>
-                    <button class="btn btn-sm btn-primary" onclick="window.location.href='#'"
-                        style="width: 100%; background: var(--accent); border-color: var(--accent);">Launch IDE</button>
+                    <div style="padding:20px;">
+                        <h2>🚀 Live Code IDE</h2>
+
+                        <textarea id="codeEditor" style="width:100%; height:200px;">
+print("Hello World")
+                        </textarea>
+
+                        <br><br>
+
+                        <button id="runCodeBtn">Run Code ▶</button>
+
+                        <pre id="outputBox" style="background:#111; color:#0f0; padding:10px; margin-top:10px;">
+Output will appear here...
+                        </pre>
+                    </div>
                 </div>
 
                 <div class="glass-card animate-fade-in delay-300" id="aptitude-feature-card">
@@ -454,6 +467,29 @@
                 token: "demo-token"
             }));
         }
+    </script>
+    <script>
+    document.getElementById("runCodeBtn").onclick = function () {
+
+        const code = document.getElementById("codeEditor").value;
+
+        let output = "";
+
+        // SIMPLE INTERPRETER (DEMO)
+        if (code.includes("print")) {
+            const match = code.match(/print\\((.*?)\\)/);
+
+            if (match) {
+                output = match[1].replace(/['"]/g, "");
+            } else {
+                output = "Invalid print syntax";
+            }
+        } else {
+            output = "Code executed successfully ✅";
+        }
+
+        document.getElementById("outputBox").innerText = output;
+    };
     </script>
 </body>
 
