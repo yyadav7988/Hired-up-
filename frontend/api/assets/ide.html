@@ -1,48 +1,146 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Code IDE</title>
+<title>IDE</title>
+<style>
+body {
+    margin:0;
+    font-family: Arial;
+    background:#0f172a;
+    color:white;
+}
+
+.container {
+    display:flex;
+    height:100vh;
+}
+
+.left {
+    width:40%;
+    padding:20px;
+    border-right:1px solid #333;
+}
+
+.right {
+    width:60%;
+    display:flex;
+    flex-direction:column;
+}
+
+.editor {
+    flex:1;
+    padding:10px;
+}
+
+textarea {
+    width:100%;
+    height:100%;
+    background:#020617;
+    color:#22c55e;
+    font-size:14px;
+    border:none;
+    outline:none;
+}
+
+.controls {
+    padding:10px;
+    border-top:1px solid #333;
+}
+
+button {
+    padding:10px 20px;
+    margin-right:10px;
+    background:linear-gradient(90deg,#7c3aed,#6366f1);
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.console {
+    height:120px;
+    background:black;
+    color:lime;
+    padding:10px;
+    font-family:monospace;
+}
+</style>
 </head>
-<body style="font-family:sans-serif; padding:20px;">
 
-<h2>🚀 Coding Problem</h2>
+<body>
 
-<p><b>Question:</b> Print "Hello World"</p>
-<p><b>Description:</b> Write a program to print Hello World</p>
+<div class="container">
 
-<textarea id="editor" style="width:100%; height:200px;">
-print("Hello World")
-</textarea>
+<!-- LEFT SIDE -->
+<div class="left">
+<h2>Valid Palindrome</h2>
+<p>
+A phrase is a palindrome if, after removing non-alphanumeric characters
+and converting to lowercase, it reads the same forward and backward.
+</p>
 
-<br><br>
-
-<button id="runBtn">Run Code ▶</button>
-
-<pre id="output" style="background:black; color:lime; padding:10px; margin-top:10px;">
-Output will appear here...
+<p><b>Example:</b></p>
+<pre>
+Input: "A man, a plan, a canal: Panama"
+Output: true
 </pre>
 
+</div>
+
+<!-- RIGHT SIDE -->
+<div class="right">
+
+<div class="editor">
+<textarea id="code">
+// Write your code here
+
+function solution() {
+    console.log("Hello, HiredUp!");
+}
+
+solution();
+</textarea>
+</div>
+
+<div class="controls">
+<button onclick="runCode()">Run ▶</button>
+<button onclick="submitCode()">Submit ✅</button>
+</div>
+
+<div id="console" class="console">
+Ready...
+</div>
+
+</div>
+
+</div>
+
 <script>
-document.getElementById("runBtn").onclick = function () {
+function runCode() {
+    const code = document.getElementById("code").value;
+    const consoleDiv = document.getElementById("console");
 
-    const code = document.getElementById("editor").value;
+    try {
+        let output = "";
 
-    let result = "";
+        const log = console.log;
+        console.log = function(msg) {
+            output += msg + "\n";
+        };
 
-    if (code.includes("print")) {
-        const match = code.match(/print\((.*?)\)/);
+        eval(code);
 
-        if (match) {
-            result = match[1].replace(/['"]/g, "");
-        } else {
-            result = "Syntax Error";
-        }
-    } else {
-        result = "Executed Successfully ✅";
+        console.log = log;
+
+        consoleDiv.innerText = output || "No output";
+    } catch (e) {
+        consoleDiv.innerText = "Error: " + e.message;
     }
+}
 
-    document.getElementById("output").innerText = result;
-};
+function submitCode() {
+    document.getElementById("console").innerText = "Accepted ✅ (Demo)";
+}
 </script>
 
 </body>
