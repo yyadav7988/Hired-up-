@@ -212,7 +212,13 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("SERVER RESPONSE:", res);
 
             if (res.token || res.success) {
-                localStorage.setItem("user", JSON.stringify(res));
+                localStorage.setItem("user", JSON.stringify({
+                    id: "demo123",
+                    name: "Demo User",
+                    email: email,
+                    role: "candidate",
+                    token: "demo-token-123"
+                }));
                 alert("Login successful");
                 window.location.href = "index.html";
             } else {
@@ -225,8 +231,11 @@ document.addEventListener("DOMContentLoaded", () => {
             // 🔥 FALLBACK LOGIN FOR DEMO
             if (email === "test@gmail.com" && password === "123456") {
                 localStorage.setItem("user", JSON.stringify({
-                    email,
-                    name: "Demo User"
+                    id: "demo123",
+                    name: "Demo User",
+                    email: email,
+                    role: "candidate",
+                    token: "demo-token-123"
                 }));
 
                 alert("Login successful (demo mode)");
