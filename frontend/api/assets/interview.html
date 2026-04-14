@@ -297,10 +297,10 @@
 
   </div>
 
-  <script src="./api_utils.js"></script>
-  <script src="./app.js"></script>
-  <script>
-    const GEMINI_API = (window.API_BASE_URL || "");
+  <script type="module" src="./api_utils.js"></script>
+  <script type="module" src="./app.js"></script>
+  <script type="module">
+    import { apiRequest } from "./api_utils.js";
     const user = JSON.parse(localStorage.getItem('hiredUpUser') || 'null');
     if (!user) window.location.href = 'auth.html';
 
@@ -322,14 +322,8 @@
 
       // Try AI generation
       try {
-        const res = await fetch(`${GEMINI_API}/api/interview/questions`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          mode: 'cors',
-          body: JSON.stringify({ role, type, level, count: totalQCount })
-        });
-        if (res.ok) {
-          const data = await res.json();
+        const data = await apiRequest('/api/interview/questions', 'POST', { role, type, level, count: totalQCount });
+        if(data.questions) {
           questions = data.questions;
         } else throw new Error();
       } catch (err) {
@@ -422,14 +416,12 @@
       let evaluation;
 
       try {
-        const res = await fetch(`${GEMINI_API}/api/interview/evaluate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          mode: 'cors',
-          body: JSON.stringify({ question: q.text, answer, role: document.getElementById('job-role').value || 'Software Engineer' })
+        evaluation = await apiRequest('/api/interview/evaluate', 'POST', {
+          question: q.text,
+          answer,
+          role: document.getElementById('job-role').value || 'Software Engineer'
         });
-        if (res.ok) { evaluation = await res.json(); }
-        else throw new Error();
+        if (!evaluation) throw new Error();
       } catch (err) {
         console.error("API Error:", err);
         evaluation = localEvaluate(answer);

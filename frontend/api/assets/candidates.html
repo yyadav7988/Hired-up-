@@ -373,7 +373,8 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { apiRequest } from "./api_utils.js";
         let candidates = [];
 
         const grid = document.getElementById('candidatesGrid');
@@ -385,14 +386,7 @@
 
         async function fetchCandidates() {
             try {
-                const res = await fetch((window.API_BASE_URL || "") + '/api/auth/candidates', {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" },
-                    mode: "cors"
-                });
-
-                if (!res.ok) throw new Error('Failed to fetch');
-                candidates = await res.json();
+                candidates = await apiRequest('/api/auth/candidates', "GET");
 
                 // Map real data to UI format
                 candidates = (candidates || []).map(c => {
@@ -488,8 +482,8 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', fetchCandidates);
     </script>
-    <script src="./api_utils.js"></script>
-    <script src="./app.js"></script>
+    <script type="module" src="./api_utils.js"></script>
+    <script type="module" src="./app.js"></script>
 
 </body>
 

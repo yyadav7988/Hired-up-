@@ -404,9 +404,10 @@
         </div>
     </main>
 
-    <script src="./api_utils.js"></script>
-    <script src="./app.js"></script>
-    <script>
+    <script type="module" src="./api_utils.js"></script>
+    <script type="module" src="./app.js"></script>
+    <script type="module">
+        import { apiRequest } from "./api_utils.js";
         // Tech Stack Tag Logic
         const techInput = document.getElementById('tech-stack-input');
         const techContainer = document.getElementById('tech-stack-tags');
@@ -460,12 +461,7 @@
         async function fetchChallenges() {
             const listEl = document.getElementById('challenges-list');
             try {
-                const res = await fetch((window.API_BASE_URL || "") + '/api/problems', {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
-                    mode: 'cors'
-                });
-                const problems = await res.json();
+                const problems = await apiRequest('/api/problems', 'GET');
 
                 listEl.innerHTML = '';
                 (problems || []).forEach(p => {
@@ -546,22 +542,13 @@
                 }
 
                 let response;
-                response = await fetch((window.API_BASE_URL || "") + '/api/jobs', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    mode: 'cors',
-                    body: JSON.stringify(jobData)
-                });
+                response = await apiRequest('/api/jobs', 'POST', jobData);
 
-                if (response.ok) {
+                if (response) {
                     alert('✨ Job Mission Published Successfully!');
                     window.location.href = 'recruiter.html';
                 } else {
-                    const err = await response.json();
-                    alert('Error: ' + (err.error || err.message || 'Unknown error'));
+                    alert('Error: Job posting failed.');
                     submitBtn.textContent = originalText;
                     submitBtn.disabled = false;
                 }

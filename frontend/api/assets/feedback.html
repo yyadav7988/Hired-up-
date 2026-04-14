@@ -301,11 +301,10 @@
     </div>
   </div>
 
-  <script src="./api_utils.js"></script>
-  <script src="./app.js"></script>
-  <script>
-    const LC_API = (window.API_BASE_URL || "");
-    const MAIN_API = (window.API_BASE_URL || "");
+  <script type="module" src="./api_utils.js"></script>
+  <script type="module" src="./app.js"></script>
+  <script type="module">
+    import { apiRequest } from "./api_utils.js";
     const user = JSON.parse(localStorage.getItem('hiredUpUser') || 'null');
     if (!user) window.location.href = 'auth.html';
 
@@ -314,22 +313,8 @@
 
     document.addEventListener('DOMContentLoaded', loadAll);
 
-    async function safeFetch(path, opts = {}) {
-      const token = localStorage.getItem('hiredUpToken') || '';
-      const headers = { 
-        'Content-Type': 'application/json', 
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...opts.headers 
-      };
-      
-      const url = path.startsWith('http') ? path : (window.API_BASE_URL || "") + path;
-      
-      try { return await fetch(url, { ...opts, headers, mode: "cors" }); }
-      catch (err) { 
-        console.error("API Error:", err);
-        throw err; 
-      }
-    }
+    /* ============ SAFE FETCH REPLACED WITH APIREQUEST ============ */
+    // Helper removed to use global apiRequest from api_utils.js
 
     /* ========================= LOAD ALL ========================= */
     async function loadAll() {
@@ -339,14 +324,12 @@
 
       try {
         const [subsRes, aptRes] = await Promise.allSettled([
-          safeFetch(`${LC_API}/api/submissions`),
-          safeFetch(`${LC_API}/api/aptitude/results`),
+          apiRequest('/api/submissions', 'GET'),
+          apiRequest('/api/aptitude/results', 'GET'),
         ]);
 
-        const submissions = subsRes.status === 'fulfilled' && subsRes.value.ok
-          ? await subsRes.value.json() : [];
-        const aptResults  = aptRes.status === 'fulfilled' && aptRes.value.ok
-          ? await aptRes.value.json() : [];
+        const submissions = subsRes.status === 'fulfilled' && subsRes.value ? subsRes.value : [];
+        const aptResults  = aptRes.status === 'fulfilled' && aptRes.value ? aptRes.value : [];
 
         if (!submissions.length && !aptResults.length) {
           loading.classList.add('hidden');

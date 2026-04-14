@@ -277,10 +277,10 @@
     </div>
   </div>
 
-  <script src="./api_utils.js"></script>
-  <script src="./app.js"></script>
-  <script>
-    const API = (window.API_BASE_URL || "");
+  <script type="module" src="./api_utils.js"></script>
+  <script type="module" src="./app.js"></script>
+  <script type="module">
+    import { apiRequest } from "./api_utils.js";
     let userSkills = JSON.parse(localStorage.getItem('userSkills') || '[]');
     let radarChart = null;
     const user = JSON.parse(localStorage.getItem('hiredUpUser') || 'null');
@@ -320,12 +320,7 @@
 
       // Load jobs
       try {
-        const res = await fetch((window.API_BASE_URL || "") + '/api/jobs', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          mode: 'cors'
-        });
-        const jobs = await res.json();
+        const jobs = await apiRequest('/api/jobs', 'GET');
         const sel = document.getElementById('job-selector');
         jobs.forEach(j => {
           const opt = document.createElement('option');
@@ -366,18 +361,11 @@
 
       // Try backend skill gap API
       try {
-        const res = await fetch(`${API}/api/jobs/skillgap/${jobId}?skills=${encodeURIComponent(userSkills.join(','))}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('hiredUpToken')}`
-          },
-          mode: 'cors'
-        });
-        if (res.ok) {
-          const data = await res.json();
+        const data = await apiRequest(`/api/jobs/skillgap/${jobId}?skills=${encodeURIComponent(userSkills.join(','))}`, 'GET');
+        if (data) {
           showResults(data.matched_skills||[], data.partial_matches||[], data.missing_skills||[]);
-          showToast('Advanced AI Skill Gap Analysis Complete', 'success');
+          // showToast is from app.js, which creates UI toasts.
+          if(window.showToast) window.showToast('Advanced AI Skill Gap Analysis Complete', 'success');
           return;
         }
       } catch (err) { 

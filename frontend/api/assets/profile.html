@@ -458,9 +458,10 @@
     </aside>
   </div>
 
-  <script src="./api_utils.js"></script>
-  <script src="./app.js"></script>
-  <script>
+  <script type="module" src="./api_utils.js"></script>
+  <script type="module" src="./app.js"></script>
+  <script type="module">
+    import { apiRequest } from "./api_utils.js";
     const API = (window.API_BASE_URL || "");
     const LC_API = (window.API_BASE_URL || "");
     const user = JSON.parse(localStorage.getItem('hiredUpUser') || 'null');
@@ -479,18 +480,8 @@
       loadAll();
     });
 
-    async function apiFetch(baseUrl, path, opts = {}) {
-      const token = localStorage.getItem('hiredUpToken') || user?.accessToken || '';
-      const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...opts.headers };
-      const url = baseUrl === window.API_BASE_URL ? (window.API_BASE_URL || "") + path : baseUrl + path;
-
-      try { 
-        return await fetch(url, { ...opts, headers, mode: "cors" }); 
-      } catch (err) { 
-        console.error("API Error:", err);
-        throw err; 
-      }
-    }
+    /* ============ SAFE FETCH REPLACED WITH APIREQUEST ============ */
+    // Removed duplicate fetch wrapper.
 
     async function loadAll() {
       await Promise.allSettled([loadProfile(), loadAssessments(), loadCertificates(), loadSubmissions(), loadPerformance()]);
@@ -499,9 +490,9 @@
     let realStats = { testsCompleted: 0, avgAccuracy: 0, certsVerified: 0, codeSubmissions: 0 };
     async function loadPerformance() {
       try {
-        const res = await apiFetch(API, '/api/performance');
-        if (res.ok) {
-          realStats = await res.json();
+        const stats = await apiRequest('/api/performance', 'GET');
+        if (stats) {
+          realStats = stats;
           document.getElementById('stat-tests').textContent = realStats.testsCompleted || 0;
           document.getElementById('stat-accuracy').textContent = (realStats.avgAccuracy || 0) + '%';
           document.getElementById('stat-certs').textContent = realStats.certsVerified || 0;
@@ -513,9 +504,8 @@
     /* -------- PROFILE -------- */
     async function loadProfile() {
       try {
-        const res = await apiFetch(API, '/api/auth/me');
-        if (!res.ok) return;
-        const data = await res.json();
+        const data = await apiRequest('/api/auth/me', 'GET');
+        if (!data) return;
         
         // Update Live Practice Link
         const token = localStorage.getItem('hiredUpToken');
@@ -639,13 +629,10 @@
       } else { lcCard.style.display = 'none'; }
     }
 
-    /* -------- ASSESSMENTS -------- */
     async function loadAssessments() {
       const container = document.getElementById('assessment-history');
       try {
-        const res = await apiFetch(API, '/api/take/jobs');
-        if (!res.ok) throw new Error();
-        const jobs = await res.json();
+        const jobs = await apiRequest('/api/take/jobs', 'GET');
         if (!jobs.length) { container.innerHTML = '<p style="opacity:0.4;font-size:0.9rem;">No assessments taken yet.</p>'; return; }
 
         let total = 0, totalScore = 0, count = 0;
@@ -668,13 +655,10 @@
       } catch { container.innerHTML = '<p style="opacity:0.3;font-size:0.85rem;">Could not load assessments.</p>'; }
     }
 
-    /* -------- CERTIFICATES -------- */
     async function loadCertificates() {
       const container = document.getElementById('cert-list');
       try {
-        const res = await apiFetch(API, '/api/certificates');
-        if (!res.ok) throw new Error();
-        const certs = await res.json();
+        const certs = await apiRequest('/api/certificates', 'GET');
         document.getElementById('stat-certs').textContent = certs.filter(c => c.status === 'VERIFIED').length;
         if (!certs.length) { container.innerHTML = '<p style="opacity:0.4;font-size:0.9rem;">No certificates uploaded yet.</p>'; return; }
         const statusColors = { VERIFIED:'#34d399', PENDING:'#fbbf24', FAILED:'#f87171', UNVERIFIABLE:'#94a3b8' };
@@ -692,12 +676,9 @@
       } catch { container.innerHTML = '<p style="opacity:0.3;font-size:0.85rem;">Could not load certificates.</p>'; }
     }
 
-    /* -------- SUBMISSIONS -------- */
     async function loadSubmissions() {
       try {
-        const res = await apiFetch(LC_API, '/api/submissions');
-        if (!res.ok) throw new Error();
-        const subs = await res.json();
+        const subs = await apiRequest('/api/submissions', 'GET');
         document.getElementById('stat-subs').textContent = subs.length;
         const accepted = subs.filter(s => s.status === 'Accepted').length;
         if (subs.length) {
@@ -756,7 +737,7 @@
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const res = await fetch((window.API_BASE_URL || "") + '/parse/resume', { method:'POST', mode:'cors', body:formData });
+        const res = await fetch('https://hired-up-backend-1bbd.onrender.com/parse/resume', { method:'POST', mode:'cors', body:formData });
         if (res.ok) {
           const parsed = await res.json();
           aiExtractedSkills = parsed.skills || [];
@@ -815,13 +796,8 @@
         skills: userSkills,
       };
 
-      try {
-        const res = await apiFetch(API, '/api/auth/profile', {
-          method: 'POST',
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Update failed');
+        const data = await apiRequest('/api/auth/profile', 'POST', payload);
+        if (!data) throw new Error('Update failed');
 
         // Update local session for immediate consistency across pages
         localStorage.setItem("userSkills", JSON.stringify(userSkills));
@@ -867,21 +843,15 @@
 
         // 3. Call ML Service Scoring Engine
         showToast('🤖 AI: Computing hybrid credibility score...', 'info');
-        const mlRes = await fetch((window.API_BASE_URL || "") + '/score/credibility', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          mode: 'cors',
-          body: JSON.stringify({
+        const analysis = await apiRequest('/score/credibility', 'POST', {
             assessment_score: realStats.avgAccuracy || 0, 
             coding_score: accuracy,
             candidate_skills: userSkills,
             certificate_scores: (verifiedCerts || []).map(c => c.trust_score || 80),
             assessment_scores_list: [realStats.avgAccuracy || 0]
-          })
         });
 
-        if (!mlRes.ok) throw new Error('ML Service Offline');
-        const analysis = await mlRes.json();
+        if (!analysis) throw new Error('ML Service Offline');
 
         // 4. Update Stats UI with REAL Data
         document.getElementById('stat-score').textContent = analysis.total_score + '%';

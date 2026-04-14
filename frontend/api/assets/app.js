@@ -1,3 +1,4 @@
+import { apiRequest } from "./api_utils.js";
 console.log("App JS Loaded");
 
 /* 
@@ -192,20 +193,7 @@ window.handleAuth = async function (e) {
         const email = document.querySelector("input[type='email']").value;
         const password = document.querySelector("input[type='password']").value;
 
-        const url = (window.API_BASE_URL || "") + "/api/auth/login";
-
-        console.log("Calling API:", url);
-
-        const res = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            mode: "cors",
-            body: JSON.stringify({ email, password })
-        });
-
-        const data = await res.json();
+        const data = await apiRequest("/api/auth/login", "POST", { email, password });
         console.log("Response:", data);
 
         alert("Login success");
@@ -262,14 +250,7 @@ async function fetchRecentTalent() {
     if (!section || !ticker) return;
 
     try {
-        const res = await fetch((window.API_BASE_URL || "") + '/api/auth/candidates', {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            mode: "cors"
-        });
-
-        if (!res.ok) throw new Error('Failed to fetch');
-        const candidates = await res.json();
+        const candidates = await apiRequest('/api/auth/candidates', "GET");
 
         const safeList = Array.isArray(candidates) ? candidates : [];
         if (safeList.length > 0) {
@@ -345,6 +326,9 @@ function runAptitudeDemo() {
 window.runAptitudeDemo = runAptitudeDemo;
 window.checkAuth = checkAuth;
 window.linkPage = linkPage;
+window.showToast = showToast;
+window.showLoader = showLoader;
+window.hideLoader = hideLoader;
 window.logout = () => {
     localStorage.removeItem("hiredUpUser");
     localStorage.removeItem("hiredUpToken");

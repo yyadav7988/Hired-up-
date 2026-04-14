@@ -337,9 +337,10 @@
   </div>
   <div id="panel-overlay" onclick="closePanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:499;backdrop-filter:blur(4px);"></div>
 
-  <script src="./api_utils.js"></script>
-  <script src="./app.js"></script>
-  <script>
+  <script type="module" src="./api_utils.js"></script>
+  <script type="module" src="./app.js"></script>
+  <script type="module">
+    import { apiRequest } from "./api_utils.js";
     /* ============ AUTH CHECK ============ */
     const _u = JSON.parse(localStorage.getItem('hiredUpUser') || 'null');
     if (!_u || (_u.role !== 'Recruiter' && _u.role !== 'RECRUITER')) {
@@ -367,17 +368,8 @@
       loadDashboard();
     });
 
-    /* ============ SAFE FETCH ============ */
-    async function apiFetch(path, opts = {}) {
-      const token = localStorage.getItem('hiredUpToken') || (_u && _u.accessToken) || '';
-      const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...opts.headers };
-      try {
-        return await fetch((window.API_BASE_URL || "") + path, { ...opts, headers, mode: "cors" });
-      } catch (err) {
-        console.error("API Error:", err);
-        throw err;
-      }
-    }
+    /* ============ SAFE FETCH REPLACED WITH APIREQUEST ============ */
+    // Helper removed to use global apiRequest from api_utils.js
 
     /* ============ CHART INIT ============ */
     function initChart() {
@@ -420,13 +412,10 @@
     /* ============ LOAD DASHBOARD ============ */
     async function loadDashboard() {
       try {
-        const [jobsRes, candsRes] = await Promise.all([
-          apiFetch('/api/jobs'),
-          apiFetch('/api/auth/candidates').catch(() => ({ json: async () => [] }))
+        const [jobs, cands] = await Promise.all([
+          apiRequest('/api/jobs', 'GET').catch(() => []),
+          apiRequest('/api/auth/candidates', 'GET').catch(() => [])
         ]);
-
-        const jobs = jobsRes.ok ? await jobsRes.json() : [];
-        const cands = candsRes.ok ? await candsRes.json() : [];
 
         document.getElementById('stat-jobs').textContent = jobs.length;
         document.getElementById('stat-cands').textContent = cands.length;
@@ -464,9 +453,7 @@
       tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:#475569;"><div style="display:inline-block;width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:#4f46e5;border-radius:50%;animation:spin 1s linear infinite;"></div><p style="margin-top:1rem;font-size:0.85rem;">Computing AI rankings...</p></td></tr>`;
 
       try {
-        const res = await apiFetch(`/api/scoring/rankings/${jobId}`);
-        if (!res.ok) throw new Error(await res.text());
-        const data = await res.json();
+        const data = await apiRequest(`/api/scoring/rankings/${jobId}`, 'GET');
         allRankings = data.rankings || [];
 
         renderRankings(allRankings);
