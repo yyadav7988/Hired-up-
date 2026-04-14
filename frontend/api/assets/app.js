@@ -184,24 +184,40 @@ function buyPlan(plan) {
     showToast(`Redirecting to payment gateway for ${plan.toUpperCase()} plan...`, 'info');
 }
 
-window.handleAuth = async function (e) {
+document.querySelector(".login-btn")?.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    console.log("Form submitted");
+    const email = document.querySelector('input[type="email"]').value;
+    const password = document.querySelector('input[type="password"]').value;
+
+    if (!email || !password) {
+        alert("Please fill all fields");
+        return;
+    }
 
     try {
-        const email = document.querySelector("input[type='email']").value;
-        const password = document.querySelector("input[type='password']").value;
+        const res = await apiRequest("/api/auth/login", "POST", {
+            email,
+            password
+        });
 
-        const data = await apiRequest("/api/auth/login", "POST", { email, password });
-        console.log("Response:", data);
+        console.log("LOGIN RESPONSE:", res);
 
-        alert("Login success");
+        if (res.token || res.success) {
+            alert("Login successful");
+            localStorage.setItem("user", JSON.stringify(res));
+            localStorage.setItem("hiredUpUser", JSON.stringify(res.user || res));
+            localStorage.setItem("hiredUpToken", res.token);
+            window.location.href = "index.html";
+        } else {
+            alert(res.message || "Login failed");
+        }
+
     } catch (err) {
-        console.error("ERROR:", err);
-        alert("Server error — is the backend running?");
+        console.error(err);
+        alert("Login error");
     }
-};
+});
 
 // --- Navigation Guards ---
 function checkAuth(target) {
