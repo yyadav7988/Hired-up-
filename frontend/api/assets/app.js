@@ -1,19 +1,23 @@
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", function () {
 
-    console.log("🚀 DEMO MODE FULLY ACTIVE");
+    console.log("🔥 FORCE DEMO MODE");
 
     // ================= LOGIN =================
-    const loginBtn = document.querySelector("button");
+    const emailInput = document.querySelector('input[type="email"]');
+    const passwordInput = document.querySelector('input[type="password"]');
 
-    if (loginBtn && loginBtn.innerText.toLowerCase().includes("log")) {
-        loginBtn.onclick = (e) => {
+    const loginBtn = Array.from(document.querySelectorAll("button"))
+        .find(b => b.innerText.toLowerCase().includes("log"));
+
+    if (loginBtn) {
+        loginBtn.onclick = function (e) {
             e.preventDefault();
 
-            const email = document.querySelector('input[type="email"]')?.value;
-            const password = document.querySelector('input[type="password"]')?.value;
+            const email = emailInput?.value;
+            const password = passwordInput?.value;
 
             if (!email || !password) {
-                alert("Please fill all fields");
+                alert("Enter email & password");
                 return;
             }
 
@@ -23,37 +27,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 token: "demo-token"
             }));
 
-            alert("Login successful 🚀");
+            alert("Login success 🚀");
+
             window.location.href = "index.html";
         };
 
-        console.log("✅ Login wired");
+        console.log("✅ LOGIN FIXED");
+    } else {
+        console.log("❌ LOGIN BUTTON NOT FOUND");
     }
 
     // ================= IDE =================
     const ideBtn = Array.from(document.querySelectorAll("button"))
-        .find(btn => btn.innerText.toLowerCase().includes("ide"));
+        .find(b => b.innerText.toLowerCase().includes("ide"));
 
     if (ideBtn) {
-        ideBtn.onclick = () => {
-
-            const code = prompt("Write your code:", "print('Hello World')");
-
+        ideBtn.onclick = function () {
+            const code = prompt("Write code:", "print('Hello World')");
             if (code !== null) {
-                alert("Running...\n\nOutput:\nHello World\n✅ Success");
+                alert("Output:\nHello World\n✅ Execution Success");
             }
         };
-
-        console.log("✅ IDE wired");
+        console.log("✅ IDE FIXED");
     }
 
     // ================= APTITUDE =================
     const aptBtn = Array.from(document.querySelectorAll("button"))
-        .find(btn => btn.innerText.toLowerCase().includes("aptitude"));
+        .find(b => b.innerText.toLowerCase().includes("aptitude"));
 
     if (aptBtn) {
-        aptBtn.onclick = () => {
-
+        aptBtn.onclick = function () {
             let score = 0;
 
             const q1 = prompt("2 + 2 = ?");
@@ -62,10 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const q2 = prompt("5 * 3 = ?");
             if (q2 === "15") score++;
 
-            alert(`Score: ${score}/2 🎯`);
+            alert("Score: " + score + "/2 🎯");
         };
-
-        console.log("✅ Aptitude wired");
+        console.log("✅ APTITUDE FIXED");
     }
 
 });
