@@ -444,6 +444,17 @@
     </footer>
 
     <script src="./app.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (!user) {
+            // fallback
+            localStorage.setItem("user", JSON.stringify({
+                name: "Demo User",
+                token: "demo-token"
+            }));
+        }
+    </script>
 </body>
 
 </html>
