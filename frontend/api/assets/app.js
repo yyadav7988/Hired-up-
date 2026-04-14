@@ -183,73 +183,37 @@ function buyPlan(plan) {
     showToast(`Redirecting to payment gateway for ${plan.toUpperCase()} plan...`, 'info');
 }
 
-async function handleAuth(event) {
-    event.preventDefault();
-    console.log("🚀 handleAuth triggered");
+window.handleAuth = async function (e) {
+    e.preventDefault();
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const fullname = document.getElementById("fullname")?.value;
-    const companyName = document.getElementById("companyName")?.value;
-    const designation = document.getElementById("designation")?.value;
-    const submitBtn = document.getElementById("submit-btn");
-    const isSignup = submitBtn.textContent === "Sign Up";
-
-    // Backend expects UPPERCASE roles: RECRUITER / CANDIDATE
-    let role = "CANDIDATE";
-    const selectedRole = document.querySelector(".role-option.selected");
-    if (selectedRole) {
-        role = selectedRole.getAttribute('data-role') === 'recruiter' ? 'RECRUITER' : 'CANDIDATE';
-    }
-
-    if (isSignup && role === 'RECRUITER') {
-        if (!companyName || !designation) {
-            showToast("⚠️ Recruiter details (Company & Designation) are mandatory.", "error");
-            return;
-        }
-    }
-
-    showLoader();
+    console.log("Form submitted");
 
     try {
-        const body = isSignup
-            ? { fullname, email, password, role, companyName, designation }
-            : { email, password };
+        const email = document.querySelector("input[type='email']").value;
+        const password = document.querySelector("input[type='password']").value;
 
-        const endpoint = isSignup ? "/auth/register" : "/auth/login";
-        const url = (window.API_BASE_URL || "") + `/api${endpoint}`;
+        const url = (window.API_BASE_URL || "") + "/api/auth/login";
+
         console.log("Calling API:", url);
+
         const res = await fetch(url, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json"
+            },
             mode: "cors",
-            body: JSON.stringify(body)
+            body: JSON.stringify({ email, password })
         });
 
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || data.message || "Auth Failed");
+        console.log("Response:", data);
 
-        showToast(isSignup ? "Account created successfully!" : "Welcome back!", "success");
-        
-        // Persist session
-        localStorage.setItem("hiredUpUser", JSON.stringify(data.user));
-        if (data.accessToken)  localStorage.setItem("hiredUpToken", data.accessToken);
-        if (data.refreshToken) localStorage.setItem("hiredUpRefreshToken", data.refreshToken);
-        localStorage.setItem("userSkills", JSON.stringify(data.user.skills || []));
-
-        // Role-based redirection (Case-insensitive)
-        const userRole = String(data.user.role).toUpperCase();
-        const redirectUrl = (userRole === "RECRUITER") ? "recruiter.html" : "profile.html";
-        
-        setTimeout(() => { window.location.href = redirectUrl; }, 1000);
-
+        alert("Login success");
     } catch (err) {
-        console.error("API Error:", err);
-        showToast(err.message || "Server connection failed", "error");
-    } finally {
-        hideLoader();
+        console.error("ERROR:", err);
+        alert("Server error — is the backend running?");
     }
-}
+};
 
 // --- Navigation Guards ---
 function checkAuth(target) {
