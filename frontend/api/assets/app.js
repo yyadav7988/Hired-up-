@@ -184,39 +184,46 @@ function buyPlan(plan) {
     showToast(`Redirecting to payment gateway for ${plan.toUpperCase()} plan...`, 'info');
 }
 
-document.querySelector(".login-btn")?.addEventListener("click", async (e) => {
-    e.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
+    const loginBtn = document.querySelector(".login-btn");
 
-    const email = document.querySelector('input[type="email"]').value;
-    const password = document.querySelector('input[type="password"]').value;
-
-    if (!email || !password) {
-        alert("Please fill all fields");
+    if (!loginBtn) {
+        console.error("Login button not found");
         return;
     }
 
-    try {
-        const res = await apiRequest("/api/auth/login", "POST", {
-            email,
-            password
-        });
+    loginBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
 
-        console.log("LOGIN RESPONSE:", res);
+        const email = document.querySelector('input[type="email"]')?.value;
+        const password = document.querySelector('input[type="password"]')?.value;
 
-        if (res.token || res.success) {
-            alert("Login successful");
-            localStorage.setItem("user", JSON.stringify(res));
-            localStorage.setItem("hiredUpUser", JSON.stringify(res.user || res));
-            localStorage.setItem("hiredUpToken", res.token);
-            window.location.href = "index.html";
-        } else {
-            alert(res.message || "Login failed");
+        if (!email || !password) {
+            alert("Please fill all fields");
+            return;
         }
 
-    } catch (err) {
-        console.error(err);
-        alert("Login error");
-    }
+        try {
+            const res = await apiRequest("/api/auth/login", "POST", {
+                email,
+                password
+            });
+
+            console.log("LOGIN RESPONSE:", res);
+
+            if (res.token || res.success) {
+                localStorage.setItem("user", JSON.stringify(res));
+                alert("Login successful");
+                window.location.href = "index.html";
+            } else {
+                alert(res.message || "Invalid credentials");
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("Server error");
+        }
+    });
 });
 
 // --- Navigation Guards ---
