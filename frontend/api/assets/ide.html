@@ -3,67 +3,13 @@
 <head>
 <title>IDE</title>
 <style>
-body {
-    margin:0;
-    font-family: Arial;
-    background:#0f172a;
-    color:white;
-}
-
-.container {
-    display:flex;
-    height:100vh;
-}
-
-.left {
-    width:40%;
-    padding:20px;
-    border-right:1px solid #333;
-}
-
-.right {
-    width:60%;
-    display:flex;
-    flex-direction:column;
-}
-
-.editor {
-    flex:1;
-    padding:10px;
-}
-
-textarea {
-    width:100%;
-    height:100%;
-    background:#020617;
-    color:#22c55e;
-    font-size:14px;
-    border:none;
-    outline:none;
-}
-
-.controls {
-    padding:10px;
-    border-top:1px solid #333;
-}
-
-button {
-    padding:10px 20px;
-    margin-right:10px;
-    background:linear-gradient(90deg,#7c3aed,#6366f1);
-    color:white;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-.console {
-    height:120px;
-    background:black;
-    color:lime;
-    padding:10px;
-    font-family:monospace;
-}
+body { margin:0; background:#0f172a; color:white; font-family:Arial; }
+.container { display:flex; height:100vh; }
+.left { width:40%; padding:20px; border-right:1px solid #333; }
+.right { width:60%; display:flex; flex-direction:column; }
+textarea { width:100%; height:100%; background:black; color:#22c55e; border:none; }
+.console { height:120px; background:black; color:lime; padding:10px; }
+button { padding:10px; margin:5px; background:purple; color:white; border:none; }
 </style>
 </head>
 
@@ -71,45 +17,23 @@ button {
 
 <div class="container">
 
-<!-- LEFT SIDE -->
 <div class="left">
-<h2>Valid Palindrome</h2>
-<p>
-A phrase is a palindrome if, after removing non-alphanumeric characters
-and converting to lowercase, it reads the same forward and backward.
-</p>
-
-<p><b>Example:</b></p>
-<pre>
-Input: "A man, a plan, a canal: Panama"
-Output: true
-</pre>
-
+<h2>Two Sum</h2>
+<p>Return indices of two numbers that add to target.</p>
 </div>
 
-<!-- RIGHT SIDE -->
 <div class="right">
 
-<div class="editor">
 <textarea id="code">
-// Write your code here
-
-function solution() {
-    console.log("Hello, HiredUp!");
-}
-
-solution();
+console.log("Hello HiredUp");
 </textarea>
+
+<div>
+<button onclick="runCode()">Run</button>
+<button onclick="submitCode()">Submit</button>
 </div>
 
-<div class="controls">
-<button onclick="runCode()">Run ▶</button>
-<button onclick="submitCode()">Submit ✅</button>
-</div>
-
-<div id="console" class="console">
-Ready...
-</div>
+<div id="console" class="console">Ready...</div>
 
 </div>
 
@@ -122,24 +46,22 @@ function runCode() {
 
     try {
         let output = "";
-
         const log = console.log;
-        console.log = function(msg) {
-            output += msg + "\n";
-        };
+
+        console.log = (msg) => output += msg + "\n";
 
         eval(code);
 
         console.log = log;
 
         consoleDiv.innerText = output || "No output";
-    } catch (e) {
+    } catch(e) {
         consoleDiv.innerText = "Error: " + e.message;
     }
 }
 
 function submitCode() {
-    document.getElementById("console").innerText = "Accepted ✅ (Demo)";
+    document.getElementById("console").innerText = "Accepted ✅";
 }
 </script>
 

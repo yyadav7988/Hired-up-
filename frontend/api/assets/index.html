@@ -321,7 +321,7 @@
                     <p style="margin-top: 0.5rem; margin-bottom: 1.5rem;">Candidates solve actual problems in a
                         browser-based IDE. No more
                         whiteboard inversions of binary trees.</p>
-                    <button class="btn btn-sm btn-primary" onclick="openIDE()"
+                    <button class="btn btn-sm btn-primary" onclick="launchIDE()"
                         style="width: 100%; background: var(--accent); border-color: var(--accent);">Launch IDE</button>
                 </div>
 
@@ -456,8 +456,8 @@
         }
     </script>
     <script>
-    function openIDE() {
-        window.location.href = "ide.html";
+    function launchIDE() {
+        window.location.href = "/frontend/api/assets/ide.html";
     }
     </script>
 </body>
