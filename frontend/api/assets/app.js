@@ -454,3 +454,38 @@ initThemeToggle();
 initFullscreenToggle();
 
 document.addEventListener('DOMContentLoaded', fetchRecentTalent);
+
+// ================= IDE DEMO =================
+document.querySelectorAll("button").forEach(btn => {
+    if (btn.innerText.includes("Launch IDE")) {
+        btn.addEventListener("click", () => {
+            alert("Opening IDE Demo 🚀");
+
+            const code = prompt("Edit Code:", "print('Hello World')");
+
+            if (code !== null) {
+                alert("Running Code...\n\nOutput:\nHello World\nExecution Successful ✅");
+            }
+        });
+    }
+});
+
+// ================= APTITUDE DEMO =================
+document.querySelectorAll("button").forEach(btn => {
+    if (btn.innerText.includes("Aptitude")) {
+        btn.addEventListener("click", () => {
+
+            const q1 = "2 + 2 = ?";
+            const ans1 = prompt(q1 + "\nOptions: 3, 4, 5, 6");
+
+            const q2 = "5 * 3 = ?";
+            const ans2 = prompt(q2 + "\nOptions: 10, 15, 20, 25");
+
+            let score = 0;
+            if (ans1 === "4") score++;
+            if (ans2 === "15") score++;
+
+            alert(`Score: ${score}/2 🎯`);
+        });
+    }
+});
