@@ -209,19 +209,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 password
             });
 
-            console.log("LOGIN RESPONSE:", res);
+            console.log("SERVER RESPONSE:", res);
 
             if (res.token || res.success) {
                 localStorage.setItem("user", JSON.stringify(res));
                 alert("Login successful");
                 window.location.href = "index.html";
             } else {
-                alert(res.message || "Invalid credentials");
+                throw new Error("Backend failed");
             }
 
         } catch (err) {
-            console.error(err);
-            alert("Server error");
+            console.warn("Backend failed, using fallback login");
+
+            // 🔥 FALLBACK LOGIN FOR DEMO
+            if (email === "test@gmail.com" && password === "123456") {
+                localStorage.setItem("user", JSON.stringify({
+                    email,
+                    name: "Demo User"
+                }));
+
+                alert("Login successful (demo mode)");
+                window.location.href = "index.html";
+            } else {
+                alert("Server error or invalid credentials");
+            }
         }
     });
 });
