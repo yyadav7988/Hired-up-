@@ -8,34 +8,16 @@ const connectDB = require('./config/db');
 // ── App Setup ──────────────────────────────────────────────────────────────
 const app = express();
 
-// CORS — allow any origin in development, restrict in production via env
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : [
-        // Local dev — allow all common frontend server ports
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:4000',
-        'http://localhost:4321',
-        'http://localhost:5173',
-        'http://localhost:5500',
-        'http://localhost:8080',
-        'http://127.0.0.1:3000',
-        'http://127.0.0.1:5500',
-        'http://127.0.0.1:8080',
-    ];
-
 app.use(cors({
-    origin: (origin, cb) => {
-        // Allow server-to-server, Postman, and browser clients
-        if (!origin || process.env.NODE_ENV !== 'production') return cb(null, true);
-        if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
-        cb(new Error(`CORS blocked: ${origin}`));
-    },
+    origin: "https://hired-up-mauve.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }));
 
-app.use(express.json({ limit: '2mb' }));
+app.options("*", cors());
+
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ── Database ───────────────────────────────────────────────────────────────
